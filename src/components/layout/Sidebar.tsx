@@ -30,11 +30,11 @@ export const Sidebar = () => {
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[220px] xl:w-[245px] flex-col border-r border-border bg-background z-50 animate-slide-in-left">
       {/* Logo */}
-      <div className="px-6 pt-8 pb-4">
+      <div className="px-6 pt-8 pb-6">
         <h1 
           onClick={() => navigate("/")}
-          className="text-2xl font-bold cursor-pointer hover:opacity-70 transition-opacity"
-          style={{ fontFamily: "'Segoe UI', sans-serif", fontStyle: "italic" }}
+          className="text-2xl cursor-pointer hover:opacity-70 transition-opacity tracking-tight"
+          style={{ fontFamily: "'Playfair Display', serif" }}
         >
           KayMart
         </h1>
@@ -57,33 +57,35 @@ export const Sidebar = () => {
                   onClick={() => navigate(item.path)}
                   className={cn(
                     "nav-item w-full group",
-                    isActive && "active"
+                    isActive && "active bg-secondary/50"
                   )}
                 >
                   <Icon 
                     className={cn(
-                      "w-6 h-6 transition-transform duration-200 group-hover:scale-110",
-                      isActive && "fill-current"
+                      "w-6 h-6 transition-all duration-200 group-hover:scale-110",
+                      isActive && "text-accent"
                     )} 
                     strokeWidth={isActive ? 2.5 : 1.5}
                   />
                   <span className={cn(
-                    "text-base transition-all duration-200",
-                    isActive ? "font-bold" : "font-normal"
-                  )}>
+                    "text-[15px] transition-all duration-200",
+                    isActive ? "font-semibold" : "font-normal"
+                  )}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  >
                     {item.label}
                   </span>
                   
                   {/* Notification badge for Messages */}
                   {item.path === "/messages" && (
-                    <span className="ml-auto flex items-center justify-center w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full">
+                    <span className="ml-auto flex items-center justify-center w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full animate-bounce-in">
                       2
                     </span>
                   )}
                   
                   {/* Notification badge for Notifications */}
                   {item.path === "/notifications" && (
-                    <span className="ml-auto flex items-center justify-center w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full">
+                    <span className="ml-auto flex items-center justify-center w-5 h-5 bg-accent text-accent-foreground text-[10px] font-bold rounded-full animate-bounce-in">
                       5
                     </span>
                   )}
@@ -98,7 +100,7 @@ export const Sidebar = () => {
       <div className="px-3 py-4 border-t border-border">
         <button className="nav-item w-full group">
           <Menu className="w-6 h-6 transition-transform duration-200 group-hover:scale-110" strokeWidth={1.5} />
-          <span className="text-base">More</span>
+          <span className="text-[15px]" style={{ fontFamily: "'DM Sans', sans-serif" }}>More</span>
         </button>
       </div>
     </aside>
