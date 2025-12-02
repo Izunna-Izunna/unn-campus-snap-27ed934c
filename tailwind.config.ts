@@ -17,7 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['DM Sans', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -53,13 +54,6 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        instagram: {
-          blue: "hsl(var(--instagram-blue))",
-          pink: "hsl(var(--instagram-pink))",
-          purple: "hsl(var(--instagram-purple))",
-          orange: "hsl(var(--instagram-orange))",
-          yellow: "hsl(var(--instagram-yellow))",
-        },
         gray: {
           50: "hsl(var(--gray-50))",
           100: "hsl(var(--gray-100))",
@@ -80,9 +74,8 @@ export default {
       },
       boxShadow: {
         card: "var(--shadow-card)",
-        modal: "var(--shadow-modal)",
+        elevated: "var(--shadow-elevated)",
         glow: "var(--shadow-glow)",
-        soft: "var(--shadow-soft)",
       },
       keyframes: {
         "accordion-down": {
@@ -97,6 +90,10 @@ export default {
           from: { opacity: "0", transform: "translateY(10px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "fade-in-up": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
         "slide-up": {
           from: { opacity: "0", transform: "translateY(100%)" },
           to: { opacity: "1", transform: "translateY(0)" },
@@ -105,13 +102,19 @@ export default {
           from: { opacity: "0", transform: "scale(0.95)" },
           to: { opacity: "1", transform: "scale(1)" },
         },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px hsla(15, 90%, 55%, 0.2)" },
+          "50%": { boxShadow: "0 0 30px hsla(15, 90%, 55%, 0.4)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out forwards",
+        "fade-in": "fade-in 0.5s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.5s ease-out forwards",
         "slide-up": "slide-up 0.3s ease-out forwards",
         "scale-up": "scale-up 0.3s ease-out forwards",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
       },
     },
   },

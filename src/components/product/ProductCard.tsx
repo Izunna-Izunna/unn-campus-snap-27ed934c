@@ -1,7 +1,7 @@
-import { Heart, MessageCircle, Bookmark, MoreHorizontal, BadgeCheck, MapPin } from "lucide-react";
+import { useState } from "react";
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, MapPin, BadgeCheck } from "lucide-react";
 import { Product, formatPrice, timeAgo } from "@/utils/mockData";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -9,43 +9,59 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product, onViewDetail }: ProductCardProps) => {
-  const [currentImage, setCurrentImage] = useState(0);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLiked(!liked);
+  };
+
+  const handleSave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSaved(!saved);
+  };
 
   const handleImageTap = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const width = rect.width;
     
-    if (x < width / 3 && currentImage > 0) {
-      setCurrentImage(prev => prev - 1);
-    } else if (x > (width * 2) / 3 && currentImage < product.images.length - 1) {
-      setCurrentImage(prev => prev + 1);
+    if (x < width / 3 && currentImageIndex > 0) {
+      setCurrentImageIndex(prev => prev - 1);
+    } else if (x > (width * 2) / 3 && currentImageIndex < product.images.length - 1) {
+      setCurrentImageIndex(prev => prev + 1);
     } else {
       onViewDetail(product);
     }
   };
 
+  const handleDoubleClick = () => {
+    if (!liked) {
+      setLiked(true);
+    }
+  };
+
   return (
-    <article className="bg-card border-b border-border animate-fade-in">
+    <article className="premium-card mb-4 mx-4 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-3">
+      <header className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
-          <div className="story-ring">
-            <div className="story-ring-inner">
-              <img
-                src={product.seller.profilePicture}
-                alt={product.seller.fullName}
-                className="w-8 h-8 rounded-full object-cover"
-              />
-            </div>
+          <div className="story-ring-large">
+            <img
+              src={product.seller.profilePicture}
+              alt={product.seller.fullName}
+              className="w-10 h-10 rounded-full object-cover bg-background"
+            />
           </div>
           <div>
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-sm">{product.seller.username}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-sm text-foreground" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                {product.seller.username}
+              </span>
               {product.seller.verified && (
-                <BadgeCheck className="w-4 h-4 text-primary fill-primary/20" />
+                <BadgeCheck className="w-4 h-4 text-accent fill-accent/20" />
               )}
             </div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -54,105 +70,123 @@ export const ProductCard = ({ product, onViewDetail }: ProductCardProps) => {
             </div>
           </div>
         </div>
-        <button className="p-2 -mr-2 text-muted-foreground hover:text-foreground transition-colors">
-          <MoreHorizontal className="w-5 h-5" />
+        <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+          <MoreHorizontal className="w-5 h-5 text-muted-foreground" />
         </button>
-      </div>
+      </header>
 
       {/* Image */}
       <div 
-        className="relative aspect-square bg-secondary cursor-pointer"
+        className="relative aspect-square bg-secondary cursor-pointer overflow-hidden"
+        onDoubleClick={handleDoubleClick}
         onClick={handleImageTap}
       >
         <img
-          src={product.images[currentImage]}
+          src={product.images[currentImageIndex]}
           alt={product.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
         
-        {/* Price Badge */}
-        <div className="absolute bottom-3 left-3 bg-foreground/90 text-background px-3 py-1.5 rounded-lg">
-          <span className="font-bold text-sm">{formatPrice(product.price)}</span>
-        </div>
-
-        {/* Image Indicators */}
+        {/* Image indicators */}
         {product.images.length > 1 && (
-          <div className="absolute top-3 right-3 bg-foreground/70 text-background text-xs px-2 py-1 rounded-full">
-            {currentImage + 1}/{product.images.length}
-          </div>
+          <>
+            <div className="absolute top-4 right-4 bg-foreground/70 backdrop-blur-sm text-background text-xs px-2.5 py-1 rounded-full font-medium">
+              {currentImageIndex + 1}/{product.images.length}
+            </div>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+              {product.images.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex(idx);
+                  }}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all duration-300",
+                    idx === currentImageIndex 
+                      ? "bg-accent w-4" 
+                      : "bg-background/60 hover:bg-background/80"
+                  )}
+                />
+              ))}
+            </div>
+          </>
         )}
 
-        {/* Dot Indicators */}
-        {product.images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-            {product.images.map((_, idx) => (
-              <div
-                key={idx}
-                className={cn(
-                  "w-1.5 h-1.5 rounded-full transition-colors",
-                  idx === currentImage ? "bg-background" : "bg-background/50"
-                )}
-              />
-            ))}
+        {/* Condition badge */}
+        <div className="absolute top-4 left-4">
+          <span className="bg-background/90 backdrop-blur-sm text-foreground text-xs px-3 py-1.5 rounded-full font-medium shadow-sm">
+            {product.condition}
+          </span>
+        </div>
+
+        {/* Price Badge */}
+        <div className="absolute bottom-4 left-4 bg-foreground/90 backdrop-blur-sm text-background px-4 py-2 rounded-xl">
+          <span className="font-bold text-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {formatPrice(product.price)}
+          </span>
+        </div>
+
+        {/* Like animation overlay */}
+        {liked && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Heart 
+              className="w-24 h-24 text-accent fill-accent animate-heart opacity-0" 
+              style={{ animationFillMode: 'forwards' }}
+            />
           </div>
         )}
       </div>
 
       {/* Actions */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-4">
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1">
             <button 
-              onClick={() => setIsSaved(!isSaved)}
-              className={cn(
-                "transition-all active:scale-90",
-                isSaved ? "text-destructive" : "text-foreground"
-              )}
+              onClick={handleLike}
+              className="p-2 hover:bg-secondary rounded-full transition-all duration-200 active:scale-90"
             >
               <Heart 
-                className={cn("w-6 h-6", isSaved && "fill-current")} 
+                className={cn(
+                  "w-6 h-6 transition-all duration-200",
+                  liked ? "fill-accent text-accent scale-110" : "text-foreground hover:text-accent"
+                )} 
               />
             </button>
             <button 
               onClick={() => onViewDetail(product)}
-              className="text-foreground hover:text-primary transition-colors"
+              className="p-2 hover:bg-secondary rounded-full transition-all duration-200 active:scale-90"
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="w-6 h-6 text-foreground hover:text-accent transition-colors" />
+            </button>
+            <button className="p-2 hover:bg-secondary rounded-full transition-all duration-200 active:scale-90">
+              <Share2 className="w-6 h-6 text-foreground hover:text-accent transition-colors" />
             </button>
           </div>
           <button 
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className={cn(
-              "transition-all active:scale-90",
-              isBookmarked ? "text-foreground" : "text-foreground"
-            )}
+            onClick={handleSave}
+            className="p-2 hover:bg-secondary rounded-full transition-all duration-200 active:scale-90"
           >
             <Bookmark 
-              className={cn("w-6 h-6", isBookmarked && "fill-current")} 
+              className={cn(
+                "w-6 h-6 transition-all duration-200",
+                saved ? "fill-foreground text-foreground" : "text-foreground hover:text-accent"
+              )} 
             />
           </button>
         </div>
 
-        {/* Details */}
-        <div className="space-y-1">
-          <h3 className="font-semibold text-sm">{product.title}</h3>
-          <div className="flex items-center gap-2">
-            <span className={cn(
-              "text-xs px-2 py-0.5 rounded-full",
-              product.condition === "New" && "bg-primary/10 text-primary",
-              product.condition === "Like New" && "bg-emerald-glow/10 text-emerald-glow",
-              product.condition === "Good" && "bg-gold/10 text-gold",
-              product.condition === "Fair" && "bg-muted text-muted-foreground"
-            )}>
-              {product.condition}
-            </span>
-          </div>
+        {/* Title and description */}
+        <div className="space-y-2">
+          <h3 className="font-semibold text-foreground leading-tight" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {product.title}
+          </h3>
           <p className="text-sm text-muted-foreground line-clamp-2">
             {product.description}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <time className="text-xs text-muted-foreground block">
             {timeAgo(product.createdAt)}
-          </p>
+          </time>
         </div>
       </div>
     </article>
